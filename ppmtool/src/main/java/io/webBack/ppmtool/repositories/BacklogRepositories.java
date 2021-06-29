@@ -9,4 +9,5 @@ import io.webBack.ppmtool.domain.Backlog;
 public interface BacklogRepositories extends CrudRepository<Backlog, Long>{
 
 	Backlog findByProjectIdentifier(String identifier);
+
 }
