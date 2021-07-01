@@ -22,27 +22,29 @@ public class ProjectService {
 	
 	public Project saveOrUpdateProject(Project project)
 	{
-		try {
-//			System.out.println("Saving DATA in TABLE");
-//			System.out.print(project.getProjectName());
-			project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
-			
-			if(project.getId()==null) {
-				Backlog backlog = new Backlog();
-				project.setBacklog(backlog);
-				backlog.setProject(project);
-				backlog.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
-			}
-			if(project.getId()!=null) {
-				project.setBacklog(backLogRepo.findByProjectIdentifier(project.getProjectIdentifier().toUpperCase()));
-			}
-			
-//			System.out.println(project.getProjectIdentifier());
-			return projectRepo.save(project);
-		}
-		catch(Exception e) {
-			throw new ProjectIdException("Project ID '"+project.getProjectIdentifier().toUpperCase()+"'already Exists");
-		}
+		 try{
+	            project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+
+	            System.out.println("inside proService "+project.getId());
+	            if(project.getId()==null){
+	            	 System.out.println("inside proService if check ");
+	                Backlog backlog = new Backlog();
+	                project.setBacklog(backlog);
+	                backlog.setProject(project);
+	                backlog.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+	            }
+
+	            if(project.getId()!=null){
+	            	 System.out.println("inside proService 2 if check ");
+	                project.setBacklog(backLogRepo.findByProjectIdentifier(project.getProjectIdentifier().toUpperCase()));
+	            }
+
+	            return projectRepo.save(project);
+
+	        }catch (Exception e){
+	            throw new ProjectIdException("Project ID '"+project.getProjectIdentifier().toUpperCase()+"' already exists");
+	        }
+
 	}
 	
 	public Project findByProjectIdentifier(String projectId) {

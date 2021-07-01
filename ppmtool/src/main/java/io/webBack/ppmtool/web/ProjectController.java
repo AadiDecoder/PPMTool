@@ -39,10 +39,10 @@ public class ProjectController {
 	@PostMapping("")
 	public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project , BindingResult result)
 	{
-		
-		ResponseEntity<?> errorMap= mapValService.MapValidationService(result);
-         if(result.hasErrors()) {
-		           return mapValService.MapValidationService(result);
+		HashMap errorMap= mapValService.MapValidationService(result);
+         if(result.hasErrors()) 
+         {
+        	 return new ResponseEntity<Map<String,String>>( errorMap ,HttpStatus.BAD_REQUEST);
          }
          
 		Project pro=proService.saveOrUpdateProject(project);
@@ -71,7 +71,7 @@ public class ProjectController {
 	public ResponseEntity<?> deleteProjectByIdentifier(@PathVariable String projectId) {
 		
 		proService.delete(projectId);
-		return new ResponseEntity<String>("Project with ID : "+projectId+" was deleted ", HttpStatus.OK);
+		return new ResponseEntity<String>("Project with ID : "+ projectId +" was deleted ", HttpStatus.OK);
 				
 	}
 	
