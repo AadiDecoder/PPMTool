@@ -10,8 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
-
+import io.webBack.ppmtool.Exception.ProjectIdException;
 import io.webBack.ppmtool.Exception.ProjectNotFoundsException;
+import io.webBack.ppmtool.Exception.ProjectTaskNotFoundException;
 import io.webBack.ppmtool.domain.Backlog;
 import io.webBack.ppmtool.domain.Project;
 import io.webBack.ppmtool.domain.ProjectTask;
@@ -37,22 +38,12 @@ public class ProjectTaskService {
 	public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask) 
 	{
        try {
-		// Exceptions: Project not found
-		// custom exception handler for hadnling null project identifier in database;
-		/*
-		 * { "Project Not Found" : "Project Not Found" }
-		 */
-
-		// PTs to be added to a specific project, project != null, BL exists
+		
 		Backlog backlog = backlogRepository.findByProjectIdentifier(projectIdentifier);
-
-		// set the bl to pt
-
-		// we want our project sequence to be like this: IDPRO-1 IDPRO-2 ...100 101
 
 		Integer BacklogSequence = backlog.getPTSequence();
 
-		// Update the BL SEQUENCE
+		
 		BacklogSequence++;
 
 		backlog.setPTSequence(BacklogSequence);
@@ -61,19 +52,17 @@ public class ProjectTaskService {
 
 		projectTask.setBacklog(backlog);
 
-		// Add Sequence to Project Task
+	
 		projectTask.setProjectSequence(backlog.getProjectIdentifier() + "-" + BacklogSequence);
 		projectTask.setProjectIdentifier(projectIdentifier);
 
-		// INITIAL priority when priority null
-
-		// INITIAL status when status is null
+		
 		if (projectTask.getStatus() == "" || projectTask.getStatus() == null) {
 			projectTask.setStatus("TO_DO");
 		}
 
-		if (projectTask.getPriority() == null) { // In the future we need projectTask.getPriority()== 0 to handle the
-													// form
+		if (projectTask.getPriority() == null) { 
+													
 			projectTask.setPriority(3);
 		}
 		backlog.getProjectTasks().add(projectTask);
@@ -98,9 +87,77 @@ public class ProjectTaskService {
 		return projectTaskRepository.findByProjectIdentifierOrderByPriority(backlog_id);
 
 	}
-
-//	public List<ProjectTask> findBacklogById(String backlog_id) {
-//		
-//		return null;
-//	}
+	
+    public ProjectTask findPTByProjectSequence(String backlog_id,String seq) {
+    	
+    	Backlog backlog = backlogRepository.findByProjectIdentifier(backlog_id);
+    	if(backlog==null) {
+    		throw new ProjectIdException("Project Identifier '"+ backlog_id.toUpperCase()+"' doesnt exist");
+    	}
+    	
+    	ProjectTask pt=projectTaskRepository.findByProjectSequence(seq);
+    	if(pt==null) {
+    		throw new ProjectTaskNotFoundException("Project Task with pTSeq: '"+seq+"'does not exist");
+    	}
+    	
+    	
+    	 if(!pt.getProjectIdentifier().equals(backlog_id)){
+             throw new ProjectNotFoundsException("Project Task ' "+ seq +" ' does not exist in project: ' "+backlog_id);
+         }
+    	
+    	
+    	return pt;
+    	
+    }
+    public ProjectTask updateByProjectSequence(ProjectTask updatedTask , String backlog_id , String pt_id) {
+//    	ProjectTask proTask = projectTaskRepository.findByProjectSequence(updatedTask.getProjectSequence());
+    	
+    	Backlog backlog = backlogRepository.findByProjectIdentifier(backlog_id);
+    	if(backlog==null) {
+    		throw new ProjectIdException("Project Identifier '"+ backlog_id.toUpperCase()+"' doesnt exist");
+    	}
+    	ProjectTask proTask=projectTaskRepository.findByProjectSequence(pt_id);
+    	if(proTask==null) {
+    		throw new ProjectTaskNotFoundException("Project Task with pTSeq: '"+pt_id+" 'does not exist");
+    	}
+    	
+    	
+    	 if(!proTask.getProjectIdentifier().equals(backlog_id)){
+    		  throw new ProjectNotFoundsException("Project Task ' "+ pt_id +" ' does not exist in project: ' "+backlog_id);
+    	 }
+    	proTask=updatedTask;
+    	
+    	return projectTaskRepository.save(proTask);
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
