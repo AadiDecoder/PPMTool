@@ -57,6 +57,7 @@ public class BacklogController {
 		return new ResponseEntity<ProjectTask>(projectTask, HttpStatus.OK);
 	}
 
+	//update rest call
 	@PostMapping("/{backlog_id}/{pt_id}")
 	public ResponseEntity<?> updateProjectTask(@Valid @RequestBody ProjectTask proTask, BindingResult result1,
 			@PathVariable String backlog_id, @PathVariable String pt_id) 

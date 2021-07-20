@@ -1,5 +1,6 @@
 package io.webBack.ppmtool.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -19,6 +20,8 @@ public class ProjectTask {
     private String acceptanceCriteria;
     private String status;
     private Integer priority;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dueDate;
     //ManyToOne with Backlog
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.REFRESH)
@@ -28,7 +31,9 @@ public class ProjectTask {
 
     @Column(updatable = false)
     private String projectIdentifier;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date create_At;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date update_At;
 
     public ProjectTask() {
