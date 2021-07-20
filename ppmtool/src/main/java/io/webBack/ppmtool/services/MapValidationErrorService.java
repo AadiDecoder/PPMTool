@@ -28,7 +28,7 @@ public HashMap MapValidationService(BindingResult result){
 		}
 		
 	}
-	System.out.println(errorMap);
+	System.out.println(errorMap+"Adarsh");
 	
 //	
 //	if(errorMap!=null)
